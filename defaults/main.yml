@@ -1,0 +1,15 @@
+---
+# defaults file for nutanix_role_prism_container
+  validate_certs: no
+  prism_containers_remove_default: True
+  prism_containers_list: []
+    # - name: Default
+    #   rf: 2
+    #   compression: True
+    #   compression_delay_in_secs: 0
+    #   dedupe_cache: True
+    #   dedupe_capacity: True
+    #   erasure_coding: True
+    #   max_capacity_in_gb: 0
+    #   advertised_capacity_in_gb: 0
+    #   reserved_capacity_in_gb: 0

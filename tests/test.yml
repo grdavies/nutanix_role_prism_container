@@ -1,0 +1,51 @@
+---
+- hosts: localhost
+  gather_facts: false
+  roles:
+    - role: ../..
+  vars:
+    prism_ip: 10.38.185.37
+    prism_username: admin
+    prism_password: nx2Tech165!
+    prism_containers_remove_default: True
+    prism_containers_list:
+      - name: inline_compression
+        rf: 2
+        compression: True
+        compression_delay_in_secs: 0
+        dedupe_cache: False
+        dedupe_capacity: False
+        erasure_coding: False
+        # max_capacity_in_gb: 0
+        # advertised_capacity_in_gb: 0
+        # reserved_capacity_in_gb: 0
+      - name: post_process_compression
+        rf: 2
+        compression: True
+        compression_delay_in_secs: 60
+        dedupe_cache: False
+        dedupe_capacity: False
+        erasure_coding: False
+        # max_capacity_in_gb: 0
+        # advertised_capacity_in_gb: 0
+        # reserved_capacity_in_gb: 0
+      - name: deduplication
+        rf: 2
+        compression: False
+        # compression_delay_in_secs: 0
+        dedupe_cache: True
+        dedupe_capacity: True
+        erasure_coding: False
+        # max_capacity_in_gb: 0
+        # advertised_capacity_in_gb: 0
+        # reserved_capacity_in_gb: 0
+      - name: inline_compression_deduplication
+        rf: 2
+        compression: True
+        compression_delay_in_secs: 0
+        dedupe_cache: True
+        dedupe_capacity: True
+        erasure_coding: False
+        # max_capacity_in_gb: 0
+        # advertised_capacity_in_gb: 0
+        # reserved_capacity_in_gb: 0

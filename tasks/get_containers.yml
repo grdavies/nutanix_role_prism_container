@@ -1,0 +1,13 @@
+---
+  - name: Gather current containers
+    uri:
+      url: "{{ prism_api_v2 }}/storage_containers"
+      method: GET
+      validate_certs: "{{ validate_certs }}"
+      body_format: json
+      headers:
+        Authorization: "{{ prism_api_auth }}"
+      status_code: 200
+      return_content: yes
+    register: prism_current_containers
+    ignore_errors: no
