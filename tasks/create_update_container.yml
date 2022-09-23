@@ -2,44 +2,70 @@
   - name: Inputs for get containers task
     include_tasks: get_containers.yml
 
-  - name: Unset fact "prism_container_uuid"
+  - name: Unset fact "nutanix_container_uuid"
     set_fact:
-      prism_container_uuid: "None"
+      nutanix_container_uuid: "None"
 
   - name: Check whether container "{{ outer_item.name }}" exists
     set_fact:
-      prism_container_uuid: "{{ item }}"
-    with_items: "{{prism_current_containers.json | to_json | from_json | json_query(query) }}"
+      nutanix_container_uuid: "{{ item }}"
+    with_items: "{{nutanix_current_containers.json | to_json | from_json | json_query(query) }}"
     vars:
       query: "entities[?name=='{{ outer_item.name }}'].storage_container_uuid"
-    when: prism_current_containers.json.metadata.total_entities > 0
+    when: nutanix_current_containers.json.metadata.total_entities > 0
+
+  - name: Debug nutanix_container_uuid for "{{ outer_item.name }}"
+    debug:
+      var: nutanix_container_uuid
+    when:
+      - nutanix_debug
+      - nutanix_container_uuid
+
+  - name: Debug api call body for "{{ outer_item.name }}"
+    debug:
+      msg: "{{ lookup('template', 'create_container.json.j2') | to_nice_json }}"
+    when: nutanix_debug
 
   - name: Create container "{{ outer_item.name }}"
     uri:
-      url: "{{ prism_api_v2 }}/storage_containers"
+      url: "{{ nutanix_api_v2 }}/storage_containers"
       method: POST
       validate_certs: "{{ validate_certs }}"
       body: "{{ lookup('template', 'create_container.json.j2') | to_nice_json }}"
       body_format: json
       headers:
-        Authorization: "{{ prism_api_auth }}"
+        Authorization: "{{ nutanix_api_auth }}"
       status_code: 201
       return_content: yes
-    register: prism_create_container
+    register: nutanix_create_container
     ignore_errors: no
-    when: prism_container_uuid == "None"
+    when: nutanix_container_uuid == "None"
+
+  - name: Debug create container result for "{{ outer_item.name }}"
+    debug:
+      var: nutanix_create_container.json
+    when:
+      - nutanix_debug
+      - nutanix_create_container is defined
 
   - name: Update container "{{ outer_item.name }}"
     uri:
-      url: "{{ prism_api_v2 }}/storage_containers"
+      url: "{{ nutanix_api_v2 }}/storage_containers"
       method: PATCH
       validate_certs: "{{ validate_certs }}"
       body: "{{ lookup('template', 'update_container.json.j2') | to_nice_json }}"
       body_format: json
       headers:
-        Authorization: "{{ prism_api_auth }}"
+        Authorization: "{{ nutanix_api_auth }}"
       status_code: 200
       return_content: yes
-    register: prism_update_container
+    register: nutanix_update_container
     ignore_errors: no
-    when: prism_container_uuid != "None"
+    when: nutanix_container_uuid != "None"
+
+  - name: Debug update container result for "{{ outer_item.name }}"
+    debug:
+      var: nutanix_update_container.json
+    when:
+      - nutanix_debug
+      - nutanix_update_container is defined

@@ -7,8 +7,9 @@
     nutanix_host: 10.38.185.37
     nutanix_username: admin
     nutanix_password: nx2Tech165!
-    prism_containers_remove_default: True
-    prism_containers_list:
+    # nutanix_debug: True
+    nutanix_containers_remove_default: True
+    nutanix_containers_list:
       - name: inline_compression
         rf: 2
         compression: True

@@ -4,22 +4,31 @@
 
   - name: Gather default container uuid
     set_fact:
-       prism_default_container_uuid: "{{item}}"
-    with_items: "{{ prism_current_containers.json | to_json | from_json | json_query(query) }}"
+       nutanix_default_container_uuid: "{{item}}"
+    with_items: "{{ nutanix_current_containers.json | to_json | from_json | json_query(query) }}"
     vars:
        query: "entities[?contains(name, 'default-container-')].storage_container_uuid"
-    when: prism_current_containers.json.metadata.total_entities > 0
+    when: nutanix_current_containers.json.metadata.total_entities > 0
 
   - name: Delete default container
     uri:
-      url: "{{ prism_api_v2 }}/storage_containers/{{ prism_default_container_uuid }}"
+      url: "{{ nutanix_api_v2 }}/storage_containers/{{ nutanix_default_container_uuid }}"
       method: DELETE
       validate_certs: "{{ validate_certs }}"
       body_format: json
       headers:
-        Authorization: "{{ prism_api_auth }}"
+        Authorization: "{{ nutanix_api_auth }}"
       status_code: 204
       return_content: yes
-    register: prism_delete_default_container
+    register: nutanix_delete_default_container
     ignore_errors: no
-    when: prism_default_container_uuid is defined
+    when: nutanix_default_container_uuid is defined
+
+  - name: Debug remove_default_container.yml variables
+    debug:
+      var: "{{ item }}"
+    loop:
+      - nutanix_default_container_uuid
+      - nutanix_delete_default_container.json
+    when:
+      - nutanix_debug

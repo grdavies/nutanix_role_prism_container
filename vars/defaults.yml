@@ -1,8 +1,8 @@
 ---
-  prism_default_rf: 2
-  prism_default_compression: True
-  prism_default_compression_delay: 0
-  prism_default_encryption: False
-  prism_default_dedupe_cache: False
-  prism_default_dedupe_capacity: False
-  prism_default_erasure_coding: False
+  nutanix_default_rf: 2
+  nutanix_default_compression: True
+  nutanix_default_compression_delay: 0
+  nutanix_default_encryption: False
+  nutanix_default_dedupe_cache: False
+  nutanix_default_dedupe_capacity: False
+  nutanix_default_erasure_coding: False
