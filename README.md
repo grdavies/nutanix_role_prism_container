@@ -16,12 +16,13 @@ This Ansible role will create or update storage containers on a Nutanix Prism cl
 | Variable                           | Required | Default | Choices                                                                         | Comments                                                                                                                                           |
 |------------------------------------|----------|---------|---------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
 | name                               | yes      |         |                                                                                 |                                                                                                                                                    |
+| state                              | yes      |         | present / absent                                                                                |                                                                                                                                                    |
 | rf                                 | no       | 2       | 2 or 3                                                                          |                                                                                                                                                    |
 | compression                        | no       | False   | True or False                                                                   |                                                                                                                                                    |
 | compression_delay_in_secs          | no       | 0       |                                                                                 | 0 = inline compression.                                                                                                                            |
-| dedupe_cache                       | no       | False   | True or False                                                                   |                                                                                                                                                    |
-| dedupe_capacity                    | no       | False   | True or False                                                                   |                                                                                                                                                    |
-| erasure_coding                     | no       | False   | True or False                                                                   |                                                                                                                                                    |
+| dedupe_cache                       | no       | False   | True / False                                                                   |                                                                                                                                                    |
+| dedupe_capacity                    | no       | False   | True / False                                                                   |                                                                                                                                                    |
+| erasure_coding                     | no       | False   | True / False                                                                   |                                                                                                                                                    |
 
 
 ## Dependencies
@@ -34,13 +35,14 @@ This Ansible role will create or update storage containers on a Nutanix Prism cl
 - hosts: localhost
   gather_facts: false
   roles:
-    - role: grdavies.nutanix_role_prism_ntp
+    - role: grdavies.nutanix_role_prism_container
   vars:
     nutanix_host: 10.38.185.37
     nutanix_username: admin
     nutanix_password: nx2Tech165!
     prism_containers_list:
       - name: example
+        state: present
         rf: 2
         compression: True
         compression_delay_in_secs: 0
@@ -48,6 +50,7 @@ This Ansible role will create or update storage containers on a Nutanix Prism cl
         dedupe_capacity: False
         erasure_coding: False
       - name: example_2
+        state: present
         rf: 2
         compression: True
         compression_delay_in_secs: 60

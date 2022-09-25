@@ -1,0 +1,123 @@
+---
+  - name: Inputs for get containers task
+    include_tasks: get_containers.yml
+
+  - name: Unset fact "nutanix_container_uuid"
+    set_fact:
+      nutanix_container_uuid: "None"
+
+  - name: Check whether container "{{ outer_item.name }}" exists
+    set_fact:
+      nutanix_container_uuid: "{{ item }}"
+    with_items: "{{nutanix_current_containers.json | to_json | from_json | json_query(query) }}"
+    vars:
+      query: "entities[?name=='{{ outer_item.name }}'].storage_container_uuid"
+    when: nutanix_current_containers.json.metadata.total_entities > 0
+
+  # - name: Debug nutanix_container_uuid for "{{ outer_item.name }}"
+  #   debug:
+  #     var: nutanix_container_uuid
+  #   when:
+  #     - nutanix_debug
+  #     - nutanix_container_uuid
+  #
+  # - name: Debug api call body for "{{ outer_item.name }}"
+  #   debug:
+  #     msg: "{{ lookup('template', 'create_container.json.j2') | to_nice_json }}"
+  #   when: nutanix_debug
+
+  - name: Create container "{{ outer_item.name }}"
+    block:
+      - name: Create container on "{{ nutanix_host }}"
+        uri:
+          url: "{{ nutanix_api_v2 }}/storage_containers"
+          method: POST
+          validate_certs: "{{ validate_certs }}"
+          body: "{{ lookup('template', 'create_container.json.j2') | to_nice_json }}"
+          body_format: json
+          headers:
+            Authorization: "{{ nutanix_api_auth }}"
+          status_code: 201
+          return_content: yes
+        register: nutanix_create_container
+        ignore_errors: no
+
+      - name: Debug create container result for "{{ outer_item.name }}"
+        debug:
+          var: nutanix_create_container
+        when:
+          - nutanix_debug
+          - nutanix_create_container is defined
+
+      - ansible.builtin.fail:
+          msg: "could not create container '{{ outer_item.name }}'"
+        when:
+          - nutanix_create_container is defined
+          - not nutanix_create_container.json.value
+    when:
+      - nutanix_container_uuid == "None"
+      - outer_item.state == "present"
+
+  - name: Update container "{{ outer_item.name }}"
+    block:
+      - name: Update container on "{{ nutanix_host }}"
+        uri:
+          url: "{{ nutanix_api_v2 }}/storage_containers"
+          method: PATCH
+          validate_certs: "{{ validate_certs }}"
+          body: "{{ lookup('template', 'update_container.json.j2') | to_nice_json }}"
+          body_format: json
+          headers:
+            Authorization: "{{ nutanix_api_auth }}"
+          status_code: 200
+          return_content: yes
+        register: nutanix_update_container
+        ignore_errors: no
+
+      - name: Debug update container result for "{{ outer_item.name }}"
+        debug:
+          var: nutanix_update_container
+        when:
+          - nutanix_debug
+          - nutanix_update_container is defined
+
+      - ansible.builtin.fail:
+          msg: "could not update container '{{ outer_item.name }}'"
+        when:
+          - nutanix_update_container is defined
+          - not nutanix_update_container.json.value
+
+    when:
+      - nutanix_container_uuid != "None"
+      - outer_item.state == "present"
+
+  - name: Delete container "{{ outer_item.name }}"
+    block:
+      - name: Delete container on "{{ nutanix_host }}"
+        uri:
+          url: "{{ nutanix_api_v2 }}/storage_containers/{{ nutanix_container_uuid }}"
+          method: DELETE
+          validate_certs: "{{ validate_certs }}"
+          headers:
+            Authorization: "{{ nutanix_api_auth }}"
+          status_code: 204
+          return_content: yes
+        register: nutanix_delete_container
+        ignore_errors: no
+
+      - name: Debug delete container result for "{{ outer_item.name }}"
+        debug:
+          var: nutanix_delete_container
+        when:
+          - nutanix_debug
+          - nutanix_delete_container is defined
+
+      - ansible.builtin.fail:
+          msg: "could not delete container '{{ outer_item.name }}'"
+        when:
+          - nutanix_delete_container is defined
+          - nutanix_delete_container.failed
+
+    when:
+      - nutanix_container_uuid != "None"
+      - outer_item.state == "absent"

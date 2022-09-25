@@ -8,8 +8,8 @@
     ansible.builtin.include_vars:
       file: vars/defaults.yml
 
-  - name: Inputs for set container task
-    include_tasks: create_update_container.yml
+  - name: Inputs for create/update container task
+    include_tasks: crud_container.yml
     loop: "{{ nutanix_containers_list }}"
     loop_control:
       loop_var: outer_item
