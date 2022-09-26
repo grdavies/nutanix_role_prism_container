@@ -1,0 +1,6 @@
+---
+  - name: Fail if "{{ nutanix_host }}" is not a Prism Element cluster
+    ansible.builtin.fail:
+      msg: "this role can only be run against a Nutanix cluster"
+    when:
+      - nutanix_endpoint_prism_type != 'pe'

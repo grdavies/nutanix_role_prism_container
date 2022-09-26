@@ -1,4 +1,3 @@
-
 # Nutanix Role for Prism Element storage container create/update
 
 This Ansible role will create or update storage containers on a Nutanix Prism cluster. It can also remove the default container created during the clusters creation.
@@ -58,7 +57,6 @@ This Ansible role will create or update storage containers on a Nutanix Prism cl
         dedupe_capacity: True
         erasure_coding: False
 ```
-
 
 
 ## License
