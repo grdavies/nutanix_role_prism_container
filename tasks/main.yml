@@ -1,15 +1,17 @@
 ---
 # tasks file for nutanix_role_nutanix_container
-  - name: Inputs for remove default container task
-    include_tasks: remove_default_container.yml
-    when: nutanix_containers_remove_default
+- import_tasks: setup_api.yml
 
-  - name: Include default variables
-    ansible.builtin.include_vars:
-      file: vars/defaults.yml
+- name: Inputs for remove default container task
+  include_tasks: remove_default_container.yml
+  when: nutanix_containers_remove_default
 
-  - name: Inputs for create/update container task
-    include_tasks: crud_container.yml
-    loop: "{{ nutanix_containers_list }}"
-    loop_control:
-      loop_var: outer_item
+- name: Include default variables
+  ansible.builtin.include_vars:
+    file: vars/defaults.yml
+
+- name: Inputs for create/update container task
+  include_tasks: crud_container.yml
+  loop: "{{ nutanix_containers_list }}"
+  loop_control:
+    loop_var: outer_item

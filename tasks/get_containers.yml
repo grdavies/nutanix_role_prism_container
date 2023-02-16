@@ -1,19 +1,19 @@
 ---
-  - name: Gather current containers
-    uri:
-      url: "{{ nutanix_api_v2 }}/storage_containers"
-      method: GET
-      validate_certs: "{{ validate_certs }}"
-      body_format: json
-      headers:
-        Authorization: "{{ nutanix_api_auth }}"
-      status_code: 200
-      return_content: yes
-    register: nutanix_current_containers
-    ignore_errors: no
+- name: Gather current containers
+  uri:
+    url: "https://{{nutanix_host}}:{{nutanix_port}}/PrismGateway/services/rest/v2.0/storage_containers"
+    method: GET
+    validate_certs: "{{ validate_certs }}"
+    body_format: json
+    headers:
+      Authorization: "{{ nutanix_api_auth }}"
+    status_code: 200
+    return_content: yes
+  register: nutanix_current_containers
+  ignore_errors: no
 
-  - name: Debug get_containers.yml variables
-    debug:
-      var: nutanix_current_containers.json
-    when:
-      - nutanix_debug
+- name: Debug get_containers.yml variables
+  debug:
+    var: nutanix_current_containers.json
+  when:
+    - nutanix_debug
